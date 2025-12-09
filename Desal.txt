@@ -1,0 +1,56 @@
+import zipfile, os
+from reportlab.graphics.shapes import Drawing, String
+from reportlab.graphics import renderPM
+import pandas as pd
+
+base = "/mnt/data/Huntington-Desal-Retrofit-public-v0.1"
+os.makedirs(base, exist_ok=True)
+
+# README
+with open(f"{base}/README.md","w") as f:
+    f.write(
+"""# Huntington Desal Retrofit – Public v0.1
+
+Open-source blueprint for a low-cost, zero-waste desalination retrofit.
+
+## Overview
+- Turbine-side arm concept
+- Solar mist cooling loop
+- Brine-to-fertilizer upcycling
+- 6-hour retrofit, $12K materials
+
+MIT Licensed.
+""")
+
+# LICENSE
+with open(f"{base}/LICENSE","w") as f:
+    f.write(
+"""MIT License
+
+Copyright (c) 2025 Derek Appel
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction...
+""")
+
+# Cost CSV
+df = pd.DataFrame({
+    "Category": ["Turbine arm","Mist cooling","Solar piping","Fasteners","Labor"],
+    "Cost_USD":[3000,1500,2000,500,5000]
+})
+df.to_csv(f"{base}/cost-breakdown.csv", index=False)
+
+# Diagram PNG
+d = Drawing(500,200)
+d.add(String(20,120,"Huntington Desal Retrofit – v0.1", fontSize=16))
+d.add(String(20,90,"Turbine Arm → Mist Loop → Solar Cooling → Fertilizer Output", fontSize=12))
+renderPM.drawToFile(d, f"{base}/demo-diagram.png","PNG")
+
+# ZIP
+zip_path = "/mnt/data/Huntington-Desal-Retrofit-public-v0.1.zip"
+with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as z:
+    for fname in os.listdir(base):
+        z.write(f"{base}/{fname}", fname)
+
+zip_path
